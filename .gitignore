@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+dist/
+
+# Variables de entorno
+.env
+.env.*
+
+# Python
+__pycache__/
+venv/
+.venv/
