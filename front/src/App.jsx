@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import './App.css'
 
 function App() {
 
@@ -65,11 +66,15 @@ function App() {
   }
 
   function eliminarTransaccion(id) {
-  const nuevasTransacciones = transacciones.filter(
-    (transaccion) => transaccion.id !== id
-  )
+    const nuevasTransacciones = transacciones.filter(
+      (transaccion) => transaccion.id !== id
+    )
 
-  setTransacciones(nuevasTransacciones)
+    setTransacciones(nuevasTransacciones)
+
+    if (idEditando === id) {
+      cancelarEdicion()
+    }
   }
 
   function editarTransaccion(transaccion) {
@@ -78,6 +83,14 @@ function App() {
   setCategoria(transaccion.categoria)
   setDescripcion(transaccion.descripcion)
   setIdEditando(transaccion.id)
+  }
+
+  function cancelarEdicion() {
+  setIdEditando(null)
+  setTipo('gasto')
+  setMonto('')
+  setCategoria('')
+  setDescripcion('')
   }
 
   return (
@@ -117,30 +130,50 @@ function App() {
             onChange={(e) => setDescripcion(e.target.value)}
           />
           <button onClick={agregarTransaccion}>
-          Agregar movimiento
+            {idEditando !== null ? 'Guardar cambios' : 'Agregar movimiento'}
           </button>
+          {idEditando !== null && (
+          <button onClick={cancelarEdicion}>
+            Cancelar
+          </button>
+          )}
+          
           <p>Transacciones guardadas: {transacciones.length}</p>
 
           <h2>Movimientos</h2>
 
-          {transacciones.map((transaccion) => (
-            <div key={transaccion.id}>
-              <p>Tipo: {transaccion.tipo}</p>
-              <p>Monto: ${formatearDinero(transaccion.monto)}</p>
-              <p>Categoría: {transaccion.categoria}</p>
-              <p>Descripción: {transaccion.descripcion}</p>
+          <div className="lista-movimientos">
 
-              <button onClick={() => eliminarTransaccion(transaccion.id)}>
-                Eliminar
-              </button>
-              <button onClick={() => editarTransaccion(transaccion)}>
-              Editar
-              </button>
-            </div>
-          ))}
+            {transacciones.map((transaccion) => (
+              <div
+                key={transaccion.id}
+                className={`tarjeta ${transaccion.tipo}`}
+              >
 
-          <p>Tipo seleccionado: {tipo}</p>
-          <p>Monto ingresado: ${monto}</p>
+                <div>
+                  <h3>{transaccion.categoria}</h3>
+                  <p>{transaccion.descripcion}</p>
+                </div>
+
+                <div>
+                  <strong>
+                    {transaccion.tipo === 'gasto' ? '-' : '+'}
+                    ${formatearDinero(transaccion.monto)}
+                  </strong>
+
+                  <div className="acciones">
+                    <button onClick={() => editarTransaccion(transaccion)}>
+                      Editar
+                    </button>
+
+                    <button onClick={() => eliminarTransaccion(transaccion.id)}>
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
   )
 }
