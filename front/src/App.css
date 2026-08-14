@@ -7,10 +7,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   padding: 20px;
   margin-bottom: 15px;
-
   border-radius: 12px;
   background-color: #242424;
 }
@@ -37,4 +35,65 @@
 
 .acciones button {
   margin-left: 5px;
+}
+
+.resumen {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 25px 0;
+}
+
+.resumen-card {
+  background-color: #242424;
+  padding: 20px;
+  border-radius: 12px;
+  min-width: 150px;
+}
+
+.resumen-card p {
+  margin: 0 0 10px 0;
+}
+
+.resumen-card strong {
+  font-size: 24px;
+}
+
+.formulario {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 25px 0;
+}
+
+.formulario input,
+.formulario select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  font-size: 14px;
+}
+
+.formulario button {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.resumen-card.ingresos {
+  border-bottom: 4px solid green;
+}
+
+.resumen-card.gastos {
+  border-bottom: 4px solid red;
+}
+
+.resumen-card.saldo.positivo {
+  border-bottom: 4px solid green;
+}
+
+.resumen-card.saldo.negativo {
+  border-bottom: 4px solid red;
 }

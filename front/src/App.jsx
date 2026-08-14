@@ -1,16 +1,31 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
 function App() {
 
-  const [tipo, setTipo] = useState('gasto')
-  const [monto, setMonto] = useState ('')
-  const [categoria, setCategoria] = useState('')
-  const [descripcion, setDescripcion] = useState('')
-  const [transacciones, setTransacciones] = useState([])
-  const [idEditando, setIdEditando] = useState(null)
+const [tipo, setTipo] = useState('gasto')
+const [monto, setMonto] = useState('')
+const [categoria, setCategoria] = useState('')
+const [descripcion, setDescripcion] = useState('')
 
-  function agregarTransaccion() {
+const [transacciones, setTransacciones] = useState(() => {
+  const transaccionesGuardadas = localStorage.getItem('transacciones')
+
+  return transaccionesGuardadas
+    ? JSON.parse(transaccionesGuardadas)
+    : []
+})
+
+const [idEditando, setIdEditando] = useState(null)
+
+useEffect(() => {
+  localStorage.setItem(
+    'transacciones',
+    JSON.stringify(transacciones)
+  )
+}, [transacciones])
+
+function agregarTransaccion() {
 
     if (monto === '' || categoria === '' || descripcion === '') {
       alert('Debes completar todos los campos')
@@ -95,48 +110,68 @@ function App() {
 
   return (
         <div>
-          <h1>Gestor Personal de Gastos</h1>
-          <p>creado para poder administrar tu dinero mensual</p>
+          <h1>Gestor personal de gastos</h1>
+          <p>creado para poder administrar dinero mensual</p>
 
           <h2>Resumen</h2>
 
-          <p>Ingresos: ${formatearDinero(totalIngresos)}</p>
-          <p>Gastos: ${formatearDinero(totalGastos)}</p>
-          <p>Saldo: ${formatearDinero(saldo)}</p>
+          <div className="resumen">
+            <div className="resumen-card">
+              <p>Ingresos</p>
+              <strong>+${formatearDinero(totalIngresos)}</strong>
+            </div>
 
-          <select
-            value={tipo}
-            onChange={(e) => setTipo(e.target.value)}
-          >
-          <option value='gasto'>Gasto</option>
-          <option value='ingreso'>Ingreso</option>
-          </select>
-          <input
-            type='number'
-            placeholder='monto'
-            value={monto}
-            onChange={(e) => setMonto(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Categoría"
-            value={categoria}
-            onChange={(e) => setCategoria(e.target.value)}
-          />
-          <input
-            type='text'
-            placeholder='Descripción'
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-          />
-          <button onClick={agregarTransaccion}>
-            {idEditando !== null ? 'Guardar cambios' : 'Agregar movimiento'}
-          </button>
-          {idEditando !== null && (
-          <button onClick={cancelarEdicion}>
-            Cancelar
-          </button>
-          )}
+            <div className="resumen-card">
+              <p>Gastos</p>
+              <strong>-${formatearDinero(totalGastos)}</strong>
+            </div>
+
+            <div className="resumen-card">
+              <p>Saldo</p>
+              <strong>${formatearDinero(saldo)}</strong>
+            </div>
+          </div>
+          <div className="formulario">
+
+            <select
+              value={tipo}
+              onChange={(e) => setTipo(e.target.value)}
+            >
+              <option value="gasto">Gasto</option>
+              <option value="ingreso">Ingreso</option>
+            </select>
+
+            <input
+              type="number"
+              placeholder="Monto"
+              value={monto}
+              onChange={(e) => setMonto(e.target.value)}
+            />
+
+            <input
+              type="text"
+              placeholder="Categoría"
+              value={categoria}
+              onChange={(e) => setCategoria(e.target.value)}
+            />
+
+            <input
+              type="text"
+              placeholder="Descripción"
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
+            />
+
+            <button onClick={agregarTransaccion}>
+              {idEditando !== null ? 'Guardar cambios' : 'Agregar movimiento'}
+            </button>
+
+            {idEditando !== null && (
+              <button onClick={cancelarEdicion}>
+                Cancelar
+              </button>
+            )}
+          </div>
           
           <p>Transacciones guardadas: {transacciones.length}</p>
 
