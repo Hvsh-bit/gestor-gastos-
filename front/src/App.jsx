@@ -7,24 +7,42 @@ function App() {
   const [categoria, setCategoria] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const [transacciones, setTransacciones] = useState([])
+  const [idEditando, setIdEditando] = useState(null)
 
   function agregarTransaccion() {
 
     if (monto === '' || categoria === '' || descripcion === '') {
-    alert('Debes completar todos los campos')
-    return
+      alert('Debes completar todos los campos')
+      return
     }
 
-  const nuevaTransaccion = {
-    
-    id: Date.now(),
-    tipo: tipo,
-    monto: Number(monto),
-    categoria: categoria,
-    descripcion: descripcion
-  }
+    if (idEditando !== null) {
+    const transaccionesActualizadas = transacciones.map((transaccion) =>
+        transaccion.id === idEditando
+          ? {
+              ...transaccion,
+              tipo: tipo,
+              monto: Number(monto),
+              categoria: categoria,
+              descripcion: descripcion
+            }
+          : transaccion
+      )
 
-  setTransacciones([...transacciones, nuevaTransaccion])
+      setTransacciones(transaccionesActualizadas)
+      setIdEditando(null)
+
+    } else {
+      const nuevaTransaccion = {
+        id: Date.now(),
+        tipo: tipo,
+        monto: Number(monto),
+        categoria: categoria,
+        descripcion: descripcion
+      }
+
+      setTransacciones([...transacciones, nuevaTransaccion])
+    }
 
   setMonto('')
   setCategoria('')
@@ -44,6 +62,22 @@ function App() {
 
   function formatearDinero(valor) {
     return valor.toLocaleString('es-CL')
+  }
+
+  function eliminarTransaccion(id) {
+  const nuevasTransacciones = transacciones.filter(
+    (transaccion) => transaccion.id !== id
+  )
+
+  setTransacciones(nuevasTransacciones)
+  }
+
+  function editarTransaccion(transaccion) {
+  setTipo(transaccion.tipo)
+  setMonto(transaccion.monto)
+  setCategoria(transaccion.categoria)
+  setDescripcion(transaccion.descripcion)
+  setIdEditando(transaccion.id)
   }
 
   return (
@@ -76,7 +110,6 @@ function App() {
             value={categoria}
             onChange={(e) => setCategoria(e.target.value)}
           />
-
           <input
             type='text'
             placeholder='Descripción'
@@ -86,7 +119,6 @@ function App() {
           <button onClick={agregarTransaccion}>
           Agregar movimiento
           </button>
-
           <p>Transacciones guardadas: {transacciones.length}</p>
 
           <h2>Movimientos</h2>
@@ -97,6 +129,13 @@ function App() {
               <p>Monto: ${formatearDinero(transaccion.monto)}</p>
               <p>Categoría: {transaccion.categoria}</p>
               <p>Descripción: {transaccion.descripcion}</p>
+
+              <button onClick={() => eliminarTransaccion(transaccion.id)}>
+                Eliminar
+              </button>
+              <button onClick={() => editarTransaccion(transaccion)}>
+              Editar
+              </button>
             </div>
           ))}
 
