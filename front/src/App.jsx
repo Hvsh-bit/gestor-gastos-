@@ -7,25 +7,21 @@ const [tipo, setTipo] = useState('gasto')
 const [monto, setMonto] = useState('')
 const [categoria, setCategoria] = useState('')
 const [descripcion, setDescripcion] = useState('')
-
-const [transacciones, setTransacciones] = useState(() => {
-  const transaccionesGuardadas = localStorage.getItem('transacciones')
-
-  return transaccionesGuardadas
-    ? JSON.parse(transaccionesGuardadas)
-    : []
-})
-
+const [transacciones, setTransacciones] = useState([])
 const [idEditando, setIdEditando] = useState(null)
 
 useEffect(() => {
-  localStorage.setItem(
-    'transacciones',
-    JSON.stringify(transacciones)
-  )
-}, [transacciones])
+  fetch('http://127.0.0.1:8000/transacciones')
+    .then((respuesta) => respuesta.json())
+    .then((datos) => {
+      setTransacciones(datos)
+    })
+    .catch((error) => {
+      console.error('Error al obtener transacciones:', error)
+    })
+}, [])
 
-function agregarTransaccion() {
+async function agregarTransaccion() {
 
     if (monto === '' || categoria === '' || descripcion === '') {
       alert('Debes completar todos los campos')
@@ -49,21 +45,45 @@ function agregarTransaccion() {
       setIdEditando(null)
 
     } else {
-      const nuevaTransaccion = {
-        id: Date.now(),
-        tipo: tipo,
-        monto: Number(monto),
-        categoria: categoria,
-        descripcion: descripcion
-      }
-
-      setTransacciones([...transacciones, nuevaTransaccion])
+    const nuevaTransaccion = {
+      tipo: tipo,
+      monto: Number(monto),
+      categoria: categoria,
+      descripcion: descripcion
     }
 
-  setMonto('')
+    try {
+      const respuesta = await fetch(
+        'http://127.0.0.1:8000/transacciones',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(nuevaTransaccion)
+        }
+      )
+
+      if (!respuesta.ok) {
+        throw new Error('Error al crear la transacción')
+      }
+
+      const transaccionCreada = await respuesta.json()
+
+      setTransacciones([
+        ...transacciones,
+        transaccionCreada
+      ])
+
+    } catch (error) {
+      console.error('Error:', error)
+      alert('No se pudo guardar la transacción')
+      return
+    }
+  }
+    setMonto('')
   setCategoria('')
   setDescripcion('')
-
 }
 
   const totalIngresos = transacciones
