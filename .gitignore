@@ -1,19 +1,65 @@
 # macOS
 .DS_Store
+.AppleDouble
+.LSOverride
 
-# Node
-node_modules/
-dist/
-
-# Variables de entorno
+# Variables de entorno y secretos
 .env
 .env.*
+!.env.example
+
+# Node / Vite
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
 
 # Python
 __pycache__/
-venv/
+*.py[cod]
+*$py.class
 .venv/
+venv/
+env/
 
-# Back
-back/.venv/
-back/__pycache__/
+# Herramientas y pruebas Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Bases de datos y respaldos
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+*.backup
+*.dump.sql
+*.sql.gz
+dumps/
+backups/
+
+# Logs y archivos temporales
+*.log
+logs/
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+# Editores
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# Archivos del sistema
+Thumbs.db
+Desktop.ini

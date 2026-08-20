@@ -29,22 +29,48 @@ async function agregarTransaccion() {
     }
 
     if (idEditando !== null) {
-    const transaccionesActualizadas = transacciones.map((transaccion) =>
-        transaccion.id === idEditando
-          ? {
-              ...transaccion,
-              tipo: tipo,
-              monto: Number(monto),
-              categoria: categoria,
-              descripcion: descripcion
-            }
-          : transaccion
-      )
+      const transaccionActualizada = {
+        tipo: tipo,
+        monto: Number(monto),
+        categoria: categoria,
+        descripcion: descripcion
+      }
 
-      setTransacciones(transaccionesActualizadas)
-      setIdEditando(null)
+      try {
+        const respuesta = await fetch(
+          `http://127.0.0.1:8000/transacciones/${idEditando}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(transaccionActualizada)
+          }
+        )
+
+        if (!respuesta.ok) {
+          throw new Error('Error al actualizar la transacción')
+        }
+
+        const datosActualizados = await respuesta.json()
+
+        const transaccionesActualizadas = transacciones.map((transaccion) =>
+          transaccion.id === idEditando
+            ? datosActualizados
+            : transaccion
+        )
+
+        setTransacciones(transaccionesActualizadas)
+        setIdEditando(null)
+
+      } catch (error) {
+        console.error('Error:', error)
+        alert('No se pudo actualizar la transacción')
+        return
+      }
 
     } else {
+
     const nuevaTransaccion = {
       tipo: tipo,
       monto: Number(monto),
@@ -100,17 +126,34 @@ async function agregarTransaccion() {
     return valor.toLocaleString('es-CL')
   }
 
-  function eliminarTransaccion(id) {
-    const nuevasTransacciones = transacciones.filter(
-      (transaccion) => transaccion.id !== id
-    )
+  async function eliminarTransaccion(id) {
+    try {
+      const respuesta = await fetch(
+        `http://127.0.0.1:8000/transacciones/${id}`,
+        {
+          method: 'DELETE'
+        }
+      )
 
-    setTransacciones(nuevasTransacciones)
+      if (!respuesta.ok) {
+        throw new Error('Error al eliminar la transacción')
+      }
 
-    if (idEditando === id) {
-      cancelarEdicion()
+      const nuevasTransacciones = transacciones.filter(
+        (transaccion) => transaccion.id !== id
+      )
+
+      setTransacciones(nuevasTransacciones)
+
+      if (idEditando === id) {
+        cancelarEdicion()
+      }
+
+    } catch (error) {
+      console.error('Error:', error)
+      alert('No se pudo eliminar la transacción')
     }
-  }
+}
 
   function editarTransaccion(transaccion) {
   setTipo(transaccion.tipo)
